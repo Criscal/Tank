@@ -7,6 +7,9 @@ TankSettings = {
   initialized = false,
 }
 
+local addon_name = "Tank"
+local saved_name = "Tank_SavedVariables"
+
 local panelData = {
   type = "panel",
   name = "Tank",
@@ -38,13 +41,10 @@ local optionsTable = {
   }
   
   
-function TankSettings:initializeOptions()
-  if (not self.initialized) then
-    self.LAM2 = LibStub("LibAddonMenu-2.0")
-    self.panel = self.LAM2:RegisterAddonPanel("TankControlPanel", panelData)
-    self.LAM2:RegisterOptionControls("TankControlPanel", optionsTable)
-    self.initialized = true
-  end
+function TankSettings:initializeOptions(event, name)
+  self.LAM2 = LibStub("LibAddonMenu-2.0")
+  self.panel = self.LAM2:RegisterAddonPanel("TankControlPanel", panelData)
+  self.LAM2:RegisterOptionControls("TankControlPanel", optionsTable)
 end
 
 local RED = ZO_ColorDef:New("FF0000")
@@ -57,8 +57,7 @@ local FONT_HARD = "ZoFontWinH3"
 local FONT_DEADLY = "ZoFontWinH1"
 local FONT_LARGER = "ZoFontWinH5"
 
-local addon_name = "Tank"
-local saved_name = "Tank_SavedVariables"
+
 
 local wm = WINDOW_MANAGER
 
@@ -76,17 +75,15 @@ function Tank:AssureSettings()
   end
 end
 
-function Tank:Init()
-  if (not self.initialized) then
-    d("Initialize Tank")
-    self.savedVars = ZO_SavedVars:New(saved_name, 1, nil, defaults, nil)
-    EVENT_MANAGER:RegisterForEvent(addon_name, EVENT_RETICLE_TARGET_CHANGED, function(...) Tank:OnTargetChanged() end)
-    EVENT_MANAGER:AddFilterForEvent(addon_name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, 'reticleover')
-    EVENT_MANAGER:RegisterForEvent(addon_name, EVENT_EFFECT_CHANGED,         function(...) Tank:OnTargetChanged() end)
-    TankSettings:initializeOptions()
-    EVENT_MANAGER:UnregisterForEvent(addon_name, EVENT_ADD_ON_LOADED)
-    self.initialized = true
-  end
+function Tank:Init(event, name)
+  if name ~= addon_name then return end
+  self.savedVars = ZO_SavedVars:New(saved_name, 1, nil, defaults, nil)
+  EVENT_MANAGER:RegisterForEvent(addon_name, EVENT_RETICLE_TARGET_CHANGED, function(...) Tank:OnTargetChanged() end)
+  EVENT_MANAGER:AddFilterForEvent(addon_name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, 'reticleover')
+  EVENT_MANAGER:RegisterForEvent(addon_name, EVENT_EFFECT_CHANGED,         function(...) Tank:OnTargetChanged() end)
+  TankSettings:initializeOptions()
+  EVENT_MANAGER:UnregisterForEvent(addon_name, EVENT_ADD_ON_LOADED)
+  
   -- GetActionInfo
   --EVENT_MANAGER:RegisterForEvent(addon_name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_ABILITY_ID, "Taunt") -- CONSTANT for TAUNT 38541?
   -- TODO: add filter for taunt if possible
