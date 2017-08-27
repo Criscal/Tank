@@ -29,6 +29,7 @@ libs\LibAddonMenu-2.0\controls\slider.lua
 libs\LibAddonMenu-2.0\controls\texture.lua
 
 TankLanguage.lua
+TankSettings.lua
 Tank.lua
 Tank.xml
 Bindings.xml

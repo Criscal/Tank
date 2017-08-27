@@ -1,51 +1,9 @@
 -- EVENT_COMBAT_EVENT:
 -- Felder 14, 15 und 16: 14 Attacker ID?, 15: Target ID?
 -- ComputeStringDistance(string source, string target, integer maxDistance)
-TankSettings = {
-  version = "0.44.0",
-  save_version = 1,
-  initialized = false,
-}
 
 local addon_name = "Tank"
 local saved_name = "Tank_SavedVariables"
-
-local panelData = {
-  type = "panel",
-  name = "Tank",
-  displayName = "Tank",
-  author = "@Criscal",
-  version = TankSettings.version,
-  slashCommand = "/ts",  --(optional) will register a keybind to open to this panel
-  registerForRefresh = true,  --boolean (optional) (will refresh all options controls when a setting is changed and when the panel is shown)
-  registerForDefaults = true, --boolean (optional) (will set all options controls back to default values)
-}
-
-local defaults = { show_untaunted_mobs = true }
-
-local optionsTable = {
-  [1] = {
-    name = "Tank Settings",
-    type = "header",
-    width = "full", --or "half" (optional)
-  },
-  [2] = {
-    name = "Show untaunted",
-    type = "checkbox",
-    getFunc = function() return Tank.savedVars.show_untaunted_mobs end,
-    setFunc = function(value)
-      Tank.savedVars.show_untaunted_mobs = value
-      end,
-    default = defaults.show_untaunted_mobs
-  }
-  }
-  
-  
-function TankSettings:initializeOptions(event, name)
-  self.LAM2 = LibStub("LibAddonMenu-2.0")
-  self.panel = self.LAM2:RegisterAddonPanel("TankControlPanel", panelData)
-  self.LAM2:RegisterOptionControls("TankControlPanel", optionsTable)
-end
 
 local RED = ZO_ColorDef:New("FF0000")
 local GREEN = ZO_ColorDef:New("00FF00")
@@ -57,10 +15,7 @@ local FONT_HARD = "ZoFontWinH3"
 local FONT_DEADLY = "ZoFontWinH1"
 local FONT_LARGER = "ZoFontWinH5"
 
-
-
 local wm = WINDOW_MANAGER
-
 
 local player_name = UndecorateDisplayName(GetDisplayName())
 local syslang = GetCVar("language.2")
@@ -77,7 +32,7 @@ end
 
 function Tank:Init(event, name)
   if name ~= addon_name then return end
-  self.savedVars = ZO_SavedVars:New(saved_name, 1, nil, defaults, nil)
+  self.savedVars = ZO_SavedVars:New(saved_name, 1, nil, TankSettings.defaults, nil)
   EVENT_MANAGER:RegisterForEvent(addon_name, EVENT_RETICLE_TARGET_CHANGED, function(...) Tank:OnTargetChanged() end)
   EVENT_MANAGER:AddFilterForEvent(addon_name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, 'reticleover')
   EVENT_MANAGER:RegisterForEvent(addon_name, EVENT_EFFECT_CHANGED,         function(...) Tank:OnTargetChanged() end)
